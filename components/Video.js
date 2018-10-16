@@ -89,7 +89,7 @@ class Video extends Component {
   onLoad(data) {
     if (!this.state.loading) return
     this.props.onLoad(data)
-    const { height, width } = data.naturalSize   
+    const { height, width } = data.naturalSize
     const ratio = height === 'undefined' && width === 'undefined' ?
       (9 / 16) : (height / width)
     const inlineHeight = this.props.lockRatio ?
@@ -116,10 +116,10 @@ class Video extends Component {
     })
   }
 
-  // onBuffer() {
-  //   // console.log('buffering')
-  //   this.setState({ loading: true, paused: true })
-  // }
+  onBuffer(a) {
+    console.log('buffering',a);
+     //this.setState({ loading: true, paused: true })
+   }
 
   onEnd() {
     this.props.onEnd()
@@ -168,23 +168,9 @@ class Video extends Component {
   }
 
   onError(msg) {
+    console.log(msg);
     this.props.onError(msg)
     const { error } = this.props
-    this.setState({ renderError: true }, () => {
-      let type
-      switch (true) {
-        case error === false:
-          type = error
-          break
-        case typeof error === 'object':
-          type = Alert.alert(error.title, error.message, error.button, error.options)
-          break
-        default:
-          type = Alert.alert('Oops!', 'There was an error playing this video, please try again later.', [{ text: 'Close' }])
-          break
-      }
-      return type
-    })
   }
 
   BackHandler() {
@@ -398,7 +384,7 @@ class Video extends Component {
           onProgress={e => this.progress(e)} // Callback every ~250ms with currentTime
           onEnd={() => this.onEnd()}
           onError={e => this.onError(e)}
-          // onBuffer={() => this.onBuffer()} // Callback when remote video is buffering
+          onBuffer={() => this.onBuffer()} // Callback when remote video is buffering
           onTimedMetadata={e => onTimedMetadata(e)} // Callback when the stream receive some metadata
         />
         <Controls
