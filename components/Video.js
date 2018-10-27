@@ -100,7 +100,8 @@ class Video extends Component {
   }
 
   onLoadStart() {
-    this.setState({ paused: true, loading: true })
+    this.setState({ paused: true, loading: true });
+    this.props.onLoadStart();
   }
 
   onLoad(data) {
@@ -135,6 +136,7 @@ class Video extends Component {
 
   onBuffer(a) {
     console.log('buffering',a);
+    this.props.onBuffer(a);
      //this.setState({ loading: true, paused: true })
    }
 
@@ -170,9 +172,15 @@ class Video extends Component {
   }
 
   onSeekRelease(percent) {
-    const seconds = percent * this.state.duration
+    const seconds = percent * this.state.duration;
+    const oldProgress = this.state.progress;
     this.setState({ progress: percent, seeking: false }, () => {
-      this.player.seek(seconds)
+      this.player.seek(seconds);
+      this.props.onSeekRelease({
+        progress: percent,
+        oldProgress,
+        duration: this.state.duration,
+      });
     })
   }
 
@@ -426,6 +434,7 @@ Video.propTypes = {
   lockPortraitOnFsExit: PropTypes.bool,
   onEnd: PropTypes.func,
   onLoad: PropTypes.func,
+  onLoadStart: PropTypes.func,
   onPlay: PropTypes.func,
   onError: PropTypes.func,
   onProgress: PropTypes.func,
@@ -453,6 +462,8 @@ Video.defaultProps = {
   playWhenInactive: false,
   rotateToFullScreen: false,
   lockPortraitOnFsExit: false,
+  onLoadStart: () => {},
+  onBuffer: () => {},
   onEnd: () => {},
   onLoad: () => {},
   onPlay: () => {},
