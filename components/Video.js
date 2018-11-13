@@ -261,7 +261,6 @@ class Video extends Component {
   seekTo(seconds) {
     const percent = seconds / this.state.duration
     if (seconds > this.state.duration) {
-      throw new Error(`Current time (${seconds}) exceeded the duration ${this.state.duration}`)
       return false
     }
     return this.onSeekRelease(percent)
