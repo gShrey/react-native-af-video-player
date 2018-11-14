@@ -151,12 +151,16 @@ class Video extends Component {
   }
 
   onRotated({ window: { width, height } }) {
-    const orientation = width > height ? 'LANDSCAPE' : 'PORTRAIT'
+    const orientation = width > height ? 'LANDSCAPE' : 'PORTRAIT';
+    const { manualToggle } = this.state;
     if (orientation === 'LANDSCAPE') {
       requestAnimationFrame(() =>{
-        this.setState({ fullScreen: true, fullScreenHeight: height, }, () => {
+        this.setState({ manualToggle: false, fullScreen: true, fullScreenHeight: height, }, () => {
           //this.animToFullscreen(height)
-          this.props.onFullScreen(this.state.fullScreen)
+          this.props.onFullScreen(this.state.fullScreen);
+          if (manualToggle !== true) {
+            Orientation.unlockAllOrientations();
+          }
         });
       });
       return;
@@ -164,7 +168,9 @@ class Video extends Component {
     if (orientation === 'PORTRAIT') {
       this.setState({
         fullScreen: false,
+        manualToggle: false,
       }, () => {
+        Orientation.unlockAllOrientations();
         this.props.onFullScreen(this.state.fullScreen)
       });
       return
@@ -225,11 +231,16 @@ class Video extends Component {
   }
 
   toggleFS() {
-    if (this.state.fullScreen) {
-      Orientation.lockToPortrait();
-    } else {
-      Orientation.lockToLandscape();
-    }
+    let manualToggle = true;
+    this.setState({
+      manualToggle
+    },() =>{
+      if (this.state.fullScreen) {
+        Orientation.lockToPortrait();
+      } else {
+        Orientation.lockToLandscape();
+      }
+    });
   }
 
   animToFullscreen(height) {
