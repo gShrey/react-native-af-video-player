@@ -8,6 +8,7 @@ import {
   BackHandler,
   Animated,
   Image,
+  Platform,
   Alert
 } from 'react-native'
 import VideoPlayer from 'react-native-video'
@@ -238,7 +239,11 @@ class Video extends Component {
       if (this.state.fullScreen) {
         Orientation.lockToPortrait();
       } else {
-        Orientation.lockToLandscape();
+        if (Platform.OS === "ios") {
+          Orientation.lockToLandscapeRight();
+        }else {
+          Orientation.lockToLandscape();
+        }
       }
     });
   }
