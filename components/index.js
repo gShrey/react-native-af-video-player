@@ -1,5 +1,6 @@
 import Video from './Video'
 export * from './PlayButton'
+export * from './NextButton'
 export * from './Controls'
 export * from './ControlBar'
 export * from './Scrubber'

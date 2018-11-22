@@ -26,7 +26,7 @@ const PlayButton = props => (
         style={styles.playButton}
         name={props.paused ? 'play-circle-outline' : 'pause-circle-outline'}
         color={props.theme}
-        size={75}
+        size={65}
       />
     </TouchableOpacity>
   </View>

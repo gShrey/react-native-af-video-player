@@ -9,6 +9,7 @@ import {
 import {
   PlayButton,
   ControlBar,
+  NextButton,
   Loading,
   TopBar,
   ProgressBar
@@ -20,7 +21,13 @@ const styles = StyleSheet.create({
     zIndex: 99
   },
   flex: {
-    flex: 1
+    flex: 1,
+    flexDirection: 'row',
+  },
+  nextButton: {
+    flex: 1,
+    right: 10,
+    bottom: 30,
   }
 })
 
@@ -122,6 +129,8 @@ class Controls extends Component {
       logo,
       more,
       onMorePress,
+      next,
+      onNextPress,
       title,
       progress,
       currentTime,
@@ -143,10 +152,16 @@ class Controls extends Component {
             theme={{ title: theme.title, more: theme.more }}
           />
           <Animated.View style={[styles.flex, { transform: [{ scale: this.scale }] }]}>
+            <View style={{ flex: 1 }} />
             <PlayButton
               onPress={() => this.props.togglePlay()}
               paused={paused}
               loading={loading}
+              theme={center}
+            />
+            <NextButton
+              onPress={() => onNextPress()}
+              next={next}
               theme={center}
             />
           </Animated.View>
@@ -164,6 +179,8 @@ class Controls extends Component {
             duration={duration}
             theme={controlBar}
             inlineOnly={inlineOnly}
+            onNextPress={onNextPress}
+            next={next}
           />
         </Animated.View>
       </Touchable>
@@ -191,6 +208,8 @@ Controls.propTypes = {
   fullscreen: PropTypes.bool.isRequired,
   muted: PropTypes.bool.isRequired,
   more: PropTypes.bool.isRequired,
+  onNextPress: PropTypes.func.isRequired,
+  next: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
   progress: PropTypes.number.isRequired,
   currentTime: PropTypes.number.isRequired,
