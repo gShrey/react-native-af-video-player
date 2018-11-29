@@ -136,6 +136,7 @@ class Controls extends Component {
       currentTime,
       duration,
       theme,
+      disableSeek,
       inlineOnly
     } = this.props
 
@@ -177,6 +178,7 @@ class Controls extends Component {
             progress={progress}
             currentTime={currentTime}
             duration={duration}
+            disableSeek={disableSeek}
             theme={controlBar}
             inlineOnly={inlineOnly}
             onNextPress={onNextPress}
@@ -207,6 +209,7 @@ Controls.propTypes = {
   inlineOnly: PropTypes.bool.isRequired,
   fullscreen: PropTypes.bool.isRequired,
   muted: PropTypes.bool.isRequired,
+  disableSeek: PropTypes.bool.isRequired,
   more: PropTypes.bool.isRequired,
   onNextPress: PropTypes.func.isRequired,
   next: PropTypes.bool.isRequired,

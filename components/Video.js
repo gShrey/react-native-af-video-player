@@ -341,6 +341,7 @@ class Video extends Component {
       onMorePress,
       inlineOnly,
       onNextPress,
+      disableSeek,
       playInBackground,
       playWhenInactive
     } = this.props
@@ -398,6 +399,7 @@ class Video extends Component {
           togglePlay={() => this.togglePlay()}
           paused={paused}
           muted={muted}
+          disableSeek={disableSeek}
           fullscreen={fullScreen}
           loading={loading}
           onSeek={val => this.seek(val)}
@@ -444,6 +446,7 @@ Video.propTypes = {
   loop: PropTypes.bool,
   startMode: PropTypes.oneOf(["inline", "fullscreen"]),
   autoPlay: PropTypes.bool,
+  disableSeek: PropTypes.bool,
   inlineOnly: PropTypes.bool,
   fullScreenOnly: PropTypes.bool,
   playInBackground: PropTypes.bool,
@@ -481,6 +484,7 @@ Video.defaultProps = {
   playWhenInactive: false,
   rotateToFullScreen: false,
   lockPortraitOnFsExit: false,
+  disableSeek: false,
   onSeekRelease: () => { },
   onLoadStart: () => { },
   onBuffer: () => { },
