@@ -241,7 +241,7 @@ class Video extends Component {
       } else {
         if (Platform.OS === "ios") {
           Orientation.lockToLandscapeRight();
-        }else {
+        } else {
           Orientation.lockToLandscape();
         }
       }
@@ -481,6 +481,7 @@ Video.defaultProps = {
   playWhenInactive: false,
   rotateToFullScreen: false,
   lockPortraitOnFsExit: false,
+  onSeekRelease: () => { },
   onLoadStart: () => { },
   onBuffer: () => { },
   onEnd: () => { },
