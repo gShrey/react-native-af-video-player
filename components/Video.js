@@ -75,7 +75,9 @@ class Video extends Component {
     this.onRotated = this.onRotated.bind(this)
   }
 
-  componentWillMount() {
+  componentDidMount() {
+    Dimensions.addEventListener('change', this.onRotated)
+    BackHandler.addEventListener('hardwareBackPress', this.BackHandler);
     if (this.props.startMode === "fullscreen") {
       Orientation.getOrientation((err, orientation) => {
         if (orientation !== "LANDSCAPE") {
@@ -88,11 +90,6 @@ class Video extends Component {
         }
       });
     }
-  }
-
-  componentDidMount() {
-    Dimensions.addEventListener('change', this.onRotated)
-    BackHandler.addEventListener('hardwareBackPress', this.BackHandler)
   }
 
   componentWillUnmount() {
@@ -155,14 +152,12 @@ class Video extends Component {
     const orientation = width > height ? 'LANDSCAPE' : 'PORTRAIT';
     const { manualToggle } = this.state;
     if (orientation === 'LANDSCAPE') {
-      requestAnimationFrame(() => {
-        this.setState({ manualToggle: false, fullScreen: true, fullScreenHeight: height, }, () => {
-          //this.animToFullscreen(height)
-          this.props.onFullScreen(this.state.fullScreen);
-          if (manualToggle !== true) {
-            Orientation.unlockAllOrientations();
-          }
-        });
+      this.setState({ manualToggle: false, fullScreen: true, fullScreenHeight: height, }, () => {
+        //this.animToFullscreen(height)
+        this.props.onFullScreen(this.state.fullScreen);
+        if (manualToggle !== true) {
+          Orientation.unlockAllOrientations();
+        }
       });
       return;
     }
