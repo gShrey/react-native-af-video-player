@@ -9,7 +9,8 @@ import {
   Animated,
   Image,
   Platform,
-  Alert
+  Alert,
+  View,
 } from 'react-native'
 import VideoPlayer from 'react-native-video'
 import KeepAwake from 'react-native-keep-awake'
@@ -69,7 +70,8 @@ class Video extends Component {
       seeking: false,
       renderError: false
     }
-    this.animInline = new Animated.Value(Win.width * 0.5625)
+    this.animInline = new Animated.Value(Win.width * 0.5625);
+    this.inlineHeight = Win.width * 0.5625;
     this.animFullscreen = new Animated.Value(Win.width * 0.5625)
     this.BackHandler = this.BackHandler.bind(this)
     this.onRotated = this.onRotated.bind(this)
@@ -79,17 +81,20 @@ class Video extends Component {
     Dimensions.addEventListener('change', this.onRotated)
     BackHandler.addEventListener('hardwareBackPress', this.BackHandler);
     if (this.props.startMode === "fullscreen") {
-      Orientation.getOrientation((err, orientation) => {
-        if (orientation !== "LANDSCAPE") {
-          this.toggleFS();
-        } else {
-          //manually set fullScreen to  true
-          this.setState({ fullScreen: true }, () => {
-            this.props.onFullScreen(this.state.fullScreen)
-          });
-        }
-      });
+
     }
+    Orientation.getOrientation((err, orientation) => {
+      if(orientation === "LANDSCAPE" ||  this.props.startMode === "fullscreen") {
+        if (Platform.OS === "ios") {
+          Orientation.lockToLandscapeRight();
+        } else {
+          Orientation.lockToLandscape();
+        }
+        this.setState({ fullScreen: true, manualToggle: true }, () => {
+          this.props.onFullScreen(this.state.fullScreen)
+        });
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -104,7 +109,7 @@ class Video extends Component {
 
   onLoad(data) {
     if (!this.state.loading) return
-    this.props.onLoad(data)
+    this.props.onLoad(data);
     const { height, width } = data.naturalSize
     const ratio = height === 'undefined' && width === 'undefined' ?
       (9 / 16) : (height / width)
@@ -117,7 +122,7 @@ class Video extends Component {
       inlineHeight,
       duration: data.duration
     }, () => {
-      Animated.timing(this.animInline, { toValue: inlineHeight, duration: 200 }).start()
+      //Animated.timing(this.animInline, { toValue: inlineHeight, duration: 200 }).start()
       this.props.onPlay(!this.state.paused)
       if (!this.state.paused) {
         KeepAwake.activate()
@@ -125,7 +130,13 @@ class Video extends Component {
           this.setState({ fullScreen: true }, () => {
             this.props.onFullScreen(this.state.fullScreen)
             this.animToFullscreen(Win.height)
-            if (this.props.rotateToFullScreen) Orientation.lockToLandscape()
+            if (this.props.rotateToFullScreen) {
+              if (Platform.OS === "ios") {
+                Orientation.lockToLandscapeRight();
+              } else {
+                Orientation.lockToLandscape();
+              }
+            }
           })
         }
       }
@@ -149,28 +160,33 @@ class Video extends Component {
   }
 
   onRotated({ window: { width, height } }) {
-    const orientation = width > height ? 'LANDSCAPE' : 'PORTRAIT';
-    const { manualToggle } = this.state;
-    if (orientation === 'LANDSCAPE') {
-      this.setState({ manualToggle: false, fullScreen: true, fullScreenHeight: height, }, () => {
-        //this.animToFullscreen(height)
-        this.props.onFullScreen(this.state.fullScreen);
-        if (manualToggle !== true) {
-          Orientation.unlockAllOrientations();
+    Orientation.getOrientation((err, orientation) => {
+      console.log({orientation});
+      if(err) {
+        orientation = width > height ? "LANDSCAPE" : "PORTRAIT";
+      }
+      const { manualToggle } = this.state;
+      if (orientation === 'LANDSCAPE') {
+        this.setState({ manualToggle: false, fullScreen: true, fullScreenHeight: height, }, () => {
+          //this.animToFullscreen(height)
+          this.props.onFullScreen(this.state.fullScreen);
+          if (manualToggle !== true) {
+            Orientation.unlockAllOrientations();
+          }
+        });
+        return;
+      }
+      if (orientation === 'PORTRAIT') {
+          this.setState({
+            fullScreen: false,
+            manualToggle: false,
+          }, () => {
+            Orientation.unlockAllOrientations();
+            this.props.onFullScreen(this.state.fullScreen)
+          });
+          return
         }
-      });
-      return;
-    }
-    if (orientation === 'PORTRAIT') {
-      this.setState({
-        fullScreen: false,
-        manualToggle: false,
-      }, () => {
-        Orientation.unlockAllOrientations();
-        this.props.onFullScreen(this.state.fullScreen)
-      });
-      return
-    }
+    });
   }
 
   onSeekRelease(percent) {
@@ -231,6 +247,7 @@ class Video extends Component {
     this.setState({
       manualToggle
     }, () => {
+      console.log(this.state.fullScreen, "fullScreen...");
       if (this.state.fullScreen) {
         Orientation.lockToPortrait();
       } else {
@@ -352,12 +369,12 @@ class Video extends Component {
     }
 
     return (
-      <Animated.View
+      <View
         style={[
           styles.background,
           fullScreen ?
             (styles.fullScreen, { height: this.state.fullScreenHeight, width: this.state.fullScreenWidth })
-            : { height: this.animInline },
+            : { height: this.state.inlineHeight },
           fullScreen ? null : style
         ]}
       >
@@ -411,7 +428,7 @@ class Video extends Component {
           theme={setTheme}
           inlineOnly={inlineOnly}
         />
-      </Animated.View>
+      </View>
     )
   }
 
