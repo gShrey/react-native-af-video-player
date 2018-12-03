@@ -87,7 +87,6 @@ class Video extends Component {
         if (Platform.OS === "ios") {
           Orientation.lockToLandscapeRight();
         } else {
-          console.log("lock to landscape");
           Orientation.lockToLandscape();
         }
         this.setState({ fullScreen: true, manualToggle: true }, () => {
@@ -144,7 +143,6 @@ class Video extends Component {
   }
 
   onBuffer(a) {
-    console.log('buffering', a);
     this.props.onBuffer(a);
     //this.setState({ loading: true, paused: true })
   }
