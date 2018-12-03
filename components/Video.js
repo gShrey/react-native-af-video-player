@@ -82,15 +82,16 @@ class Video extends Component {
     Dimensions.addEventListener('change', this.onRotated)
     BackHandler.addEventListener('hardwareBackPress', this.BackHandler);
     Orientation.getOrientation((err, orientation) => {
-
       if(orientation === "LANDSCAPE" ||  this.props.startMode === "fullscreen") {
         if (Platform.OS === "ios") {
           Orientation.lockToLandscapeRight();
         } else {
-          Orientation.lockToLandscape();
+          requestAnimationFrame(() =>{
+            Orientation.lockToLandscape();
+          });
         }
         this.setState({ fullScreen: true, manualToggle: true }, () => {
-          this.props.onFullScreen(this.state.fullScreen)
+          this.props.onFullScreen(this.state.fullScreen);
         });
       }
     });
