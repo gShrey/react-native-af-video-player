@@ -82,6 +82,7 @@ class Video extends Component {
     Dimensions.addEventListener('change', this.onRotated)
     BackHandler.addEventListener('hardwareBackPress', this.BackHandler);
     Orientation.getOrientation((err, orientation) => {
+      console.log({orientation, start:this.props.startMode }, "startmode");
       if(orientation === "LANDSCAPE" ||  this.props.startMode === "fullscreen") {
         if (Platform.OS === "ios") {
           Orientation.lockToLandscapeRight();
@@ -98,6 +99,9 @@ class Video extends Component {
   }
 
   componentWillUnmount() {
+    if(this.pendingTimer) {
+      clearTimeout(this.pendingTimer);
+    }
     Dimensions.removeEventListener('change', this.onRotated)
     BackHandler.removeEventListener('hardwareBackPress', this.BackHandler)
   }
@@ -176,7 +180,14 @@ class Video extends Component {
             fullScreen: false,
             manualToggle: false,
           }, () => {
-            Orientation.unlockAllOrientations();
+            if(this.pendingTimer) {
+              clearTimeout(this.pendingTimer);
+            }
+            this.pendingTimer = setTimeout(() =>{
+              this.pendingTimer = null;
+              //wait for user to turn screen to potrait. Otherwise
+               Orientation.unlockAllOrientations();
+            },4000);
             this.props.onFullScreen(this.state.fullScreen)
           });
           return
