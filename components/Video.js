@@ -82,7 +82,6 @@ class Video extends Component {
     Dimensions.addEventListener('change', this.onRotated)
     BackHandler.addEventListener('hardwareBackPress', this.BackHandler);
     Orientation.getOrientation((err, orientation) => {
-      console.log({orientation, start:this.props.startMode }, "startmode");
       if(orientation === "LANDSCAPE" ||  this.props.startMode === "fullscreen") {
         if (Platform.OS === "ios") {
           Orientation.lockToLandscapeRight();
@@ -168,7 +167,7 @@ class Video extends Component {
         orientation = width > height ? "LANDSCAPE" : "PORTRAIT";
       }
       const { manualToggle } = this.state;
-      if (orientation === 'LANDSCAPE') {
+      if (orientation === 'LANDSCAPE' ) {
         this.setState({ manualToggle: false, fullScreen: true, fullScreenHeight: height, }, () => {
           //this.animToFullscreen(height)
           this.props.onFullScreen(this.state.fullScreen);
@@ -185,7 +184,7 @@ class Video extends Component {
             }
             this.pendingTimer = setTimeout(() =>{
               this.pendingTimer = null;
-              //wait for user to turn screen to potrait. Otherwise
+              //wait for user to turn screen to potrait. Otherwise rotation won't
                Orientation.unlockAllOrientations();
             },4000);
             this.props.onFullScreen(this.state.fullScreen)
@@ -219,10 +218,7 @@ class Video extends Component {
         this.animToInline()
         this.props.onFullScreen(this.state.fullScreen)
         if (this.props.fullScreenOnly && !this.state.paused) this.togglePlay()
-        if (this.props.rotateToFullScreen) Orientation.lockToPortrait()
-        if (!this.props.lockPortraitOnFsExit) {
-          Orientation.unlockAllOrientations();
-        }
+        Orientation.lockToPortrait();
       })
       return true
     }
