@@ -137,11 +137,11 @@ class Controls extends Component {
       duration,
       theme,
       disableSeek,
-      inlineOnly
+      inlineOnly,
+      shareSettings,
     } = this.props
 
     const { center, ...controlBar } = theme
-
     return (
       <Touchable onPress={() => this.hideControls()}>
         <Animated.View style={[styles.container, { opacity: this.animControls }]}>
@@ -149,8 +149,10 @@ class Controls extends Component {
             title={title}
             logo={logo}
             more={more}
+            fullscreen={fullscreen}
             onMorePress={() => onMorePress()}
             theme={{ title: theme.title, more: theme.more }}
+            shareSettings={shareSettings}
           />
           <Animated.View style={[styles.flex, { transform: [{ scale: this.scale }] }]}>
             <View style={{ flex: 1 }} />
@@ -219,7 +221,16 @@ Controls.propTypes = {
   duration: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
   logo: PropTypes.string.isRequired,
-  theme: PropTypes.object.isRequired
+  theme: PropTypes.object.isRequired,
+  shareSettings: PropTypes.object,
+
+}
+
+Controls.defaultProps = {
+  shareSettings: {
+    onPress: () => {},
+    render: ({ fullscreen }) => (null)
+  },
 }
 
 export { Controls }
