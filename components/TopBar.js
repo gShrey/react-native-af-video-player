@@ -5,7 +5,8 @@ import {
   View,
   StyleSheet,
   Text,
-  Image
+  Image,
+  TouchableWithoutFeedback as Touchable
 } from 'react-native'
 
 import LinearGradient from 'react-native-linear-gradient'
@@ -16,13 +17,12 @@ const backgroundColor = 'transparent'
 
 const styles = StyleSheet.create({
   container: {
-    height: 35,
-    justifyContent: 'center'
+    height: 35
   },
   row: {
     flexDirection: 'row',
     alignSelf: 'center',
-    alignItems: 'center'
+    justifyContent: "space-between"
   },
   title: {
     flex: 1,
@@ -44,30 +44,19 @@ const TopBar = (props) => {
     more,
     title,
     theme,
-    onMorePress
+    onMorePress,
+    shareSettings,
+    fullscreen
   } = props
   return (
     <LinearGradient colors={['rgba(0,0,0,0.75)', 'rgba(0,0,0,0)']} style={styles.container}>
       <View style={styles.row}>
-        { logo && <Image style={styles.logo} resizeMode="contain" {...checkSource(logo)} />}
-        <Text
-          style={[styles.title, { color: theme.title }]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {title}
-        </Text>
-        { more &&
-          <ToggleIcon
-            style={styles.more}
-            onPress={() => onMorePress()}
-            paddingRight
-            iconOff="more-horiz"
-            iconOn="more-horiz"
-            theme={theme.more}
-            size={25}
-          />
-        }
+        <View style={{ flex: 1 }}>
+          { logo && <Image style={styles.logo} resizeMode="contain" {...checkSource(logo)} />}
+        </View>
+        <Touchable onPress={() => shareSettings.onPress()} style={{ marginTop: 5, marginLeft: 5 ,alignSelf: "flex-end" }}>
+            {shareSettings.render({ fullscreen })}
+        </Touchable>
       </View>
     </LinearGradient>
   )
