@@ -356,7 +356,8 @@ class Video extends Component {
       onNextPress,
       disableSeek,
       playInBackground,
-      playWhenInactive
+      playWhenInactive,
+      shareSettings,
     } = this.props
 
     const inline = {
@@ -424,6 +425,7 @@ class Video extends Component {
           title={title}
           next={!!onNextPress}
           onNextPress={onNextPress}
+          shareSettings={shareSettings}
           more={!!onMorePress}
           onMorePress={() => onMorePress()}
           theme={setTheme}
@@ -482,7 +484,8 @@ Video.propTypes = {
   logo: PropTypes.string,
   title: PropTypes.string,
   theme: PropTypes.object,
-  resizeMode: PropTypes.string
+  resizeMode: PropTypes.string,
+  shareSettings: PropTypes.object
 }
 
 Video.defaultProps = {
@@ -517,7 +520,7 @@ Video.defaultProps = {
   title: '',
   theme: defaultTheme,
   resizeMode: 'contain',
-  startMode: "inline",
+  startMode: "inline"
 }
 
 export default Video
