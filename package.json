@@ -9,7 +9,7 @@
     "react-native-video": "*"
   },
   "dependencies":{
-    "react-native-slider": "https://github.com/abbasfreestyle/react-native-slider.git",
+    "react-native-slider": "https://github.com/abbasfreestyle/react-native-slider.git"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
