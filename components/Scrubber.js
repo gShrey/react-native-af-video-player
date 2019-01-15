@@ -30,8 +30,7 @@ const Scrubber = (props) => {
   const { progress, theme, onSeek, onSeekRelease } = props
   return (
     <View style={styles.container}>
-      { Platform.OS === 'ios' ?
-        <Slider
+      <Slider
           onValueChange={val => onSeek(val)}
           onSlidingComplete={val => onSeekRelease(val)}
           value={progress === Number.POSITIVE_INFINITY ? 0 : progress}
@@ -41,18 +40,7 @@ const Scrubber = (props) => {
           minimumTrackTintColor={theme.scrubberBar}
           maximumTrackTintColor={trackColor}
           trackClickable
-        />
-      :
-        <RNSlider
-          style={styles.slider}
-          onValueChange={val => onSeek(val)}
-          onSlidingComplete={val => onSeekRelease(val)}
-          value={progress}
-          thumbTintColor={theme.scrubberThumb}
-          minimumTrackTintColor={theme.scrubberBar}
-          maximumTrackTintColor={trackColor}
-        />
-      }
+      />
     </View>
   )
 }
