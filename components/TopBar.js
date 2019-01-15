@@ -55,7 +55,9 @@ const TopBar = (props) => {
           { logo && <Image style={styles.logo} resizeMode="contain" {...checkSource(logo)} />}
         </View>
         <Touchable onPress={() => shareSettings.onPress()} style={{ marginTop: 5, alignSelf: "flex-end" }}>
-            {shareSettings.render({ fullscreen })}
+            <View>
+              {shareSettings.render({ fullscreen })}
+            </View>
         </Touchable>
       </View>
     </LinearGradient>
