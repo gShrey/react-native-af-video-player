@@ -139,6 +139,7 @@ class Controls extends Component {
       disableSeek,
       inlineOnly,
       shareSettings,
+      castSettings,
     } = this.props
 
     const { center, ...controlBar } = theme
@@ -153,6 +154,7 @@ class Controls extends Component {
             onMorePress={() => onMorePress()}
             theme={{ title: theme.title, more: theme.more }}
             shareSettings={shareSettings}
+            castSettings={castSettings}
           />
           <Animated.View style={[styles.flex, { transform: [{ scale: this.scale }] }]}>
             <View style={{ flex: 1 }} />
@@ -223,13 +225,18 @@ Controls.propTypes = {
   logo: PropTypes.string.isRequired,
   theme: PropTypes.object.isRequired,
   shareSettings: PropTypes.object,
+  castSettings: PropTypes.object,
 
 }
 
 Controls.defaultProps = {
   shareSettings: {
-    onPress: () => {},
+    onPress: () => { },
     render: ({ fullscreen }) => (null)
+  },
+  castSettings: {
+    onPress: () => { },
+    show: false,
   },
 }
 

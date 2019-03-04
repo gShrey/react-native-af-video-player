@@ -82,11 +82,11 @@ class Video extends Component {
     Dimensions.addEventListener('change', this.onRotated)
     BackHandler.addEventListener('hardwareBackPress', this.BackHandler);
     Orientation.getOrientation((err, orientation) => {
-      if(orientation === "LANDSCAPE" ||  this.props.startMode === "fullscreen") {
+      if (orientation === "LANDSCAPE" || this.props.startMode === "fullscreen") {
         if (Platform.OS === "ios") {
           Orientation.lockToLandscapeRight();
         } else {
-          requestAnimationFrame(() =>{
+          requestAnimationFrame(() => {
             Orientation.lockToLandscape();
           });
         }
@@ -98,7 +98,7 @@ class Video extends Component {
   }
 
   componentWillUnmount() {
-    if(this.pendingTimer) {
+    if (this.pendingTimer) {
       clearTimeout(this.pendingTimer);
     }
     Dimensions.removeEventListener('change', this.onRotated)
@@ -163,11 +163,11 @@ class Video extends Component {
 
   onRotated({ window: { width, height } }) {
     Orientation.getOrientation((err, orientation) => {
-      if(err) {
+      if (err) {
         orientation = width > height ? "LANDSCAPE" : "PORTRAIT";
       }
       const { manualToggle } = this.state;
-      if (orientation === 'LANDSCAPE' ) {
+      if (orientation === 'LANDSCAPE') {
         this.setState({ manualToggle: false, fullScreen: true, fullScreenHeight: height, }, () => {
           //this.animToFullscreen(height)
           this.props.onFullScreen(this.state.fullScreen);
@@ -175,22 +175,22 @@ class Video extends Component {
         return;
       }
       if (orientation === 'PORTRAIT') {
-          this.setState({
-            fullScreen: false,
-            manualToggle: false,
-          }, () => {
-            if(this.pendingTimer) {
-              clearTimeout(this.pendingTimer);
-            }
-            this.pendingTimer = setTimeout(() =>{
-              this.pendingTimer = null;
-              //wait for user to turn screen to potrait. Otherwise rotation won't
-               Orientation.unlockAllOrientations();
-            },4000);
-            this.props.onFullScreen(this.state.fullScreen)
-          });
-          return
-        }
+        this.setState({
+          fullScreen: false,
+          manualToggle: false,
+        }, () => {
+          if (this.pendingTimer) {
+            clearTimeout(this.pendingTimer);
+          }
+          this.pendingTimer = setTimeout(() => {
+            this.pendingTimer = null;
+            //wait for user to turn screen to potrait. Otherwise rotation won't
+            Orientation.unlockAllOrientations();
+          }, 4000);
+          this.props.onFullScreen(this.state.fullScreen)
+        });
+        return
+      }
     });
   }
 
@@ -358,6 +358,7 @@ class Video extends Component {
       playInBackground,
       playWhenInactive,
       shareSettings,
+      castSettings,
     } = this.props
 
     const inline = {
@@ -426,6 +427,7 @@ class Video extends Component {
           next={!!onNextPress}
           onNextPress={onNextPress}
           shareSettings={shareSettings}
+          castSettings={castSettings}
           more={!!onMorePress}
           onMorePress={() => onMorePress()}
           theme={setTheme}
@@ -485,7 +487,8 @@ Video.propTypes = {
   title: PropTypes.string,
   theme: PropTypes.object,
   resizeMode: PropTypes.string,
-  shareSettings: PropTypes.object
+  shareSettings: PropTypes.object,
+  castSettings: PropTypes.object
 }
 
 Video.defaultProps = {
