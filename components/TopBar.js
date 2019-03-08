@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { CastButton } from 'react-native-google-cast'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import {
   View,
@@ -50,6 +51,7 @@ const TopBar = (props) => {
     castSettings,
     fullscreen
   } = props
+
   return (
     <LinearGradient colors={['rgba(0,0,0,0.75)', 'rgba(0,0,0,0)']} style={styles.container}>
       <View style={styles.row}>
@@ -57,9 +59,9 @@ const TopBar = (props) => {
           {logo && <Image style={styles.logo} resizeMode="contain" {...checkSource(logo)} />}
         </View>
         {castSettings && castSettings.show ? (
-          <Touchable onPress={() => castSettings.onPress()} style={{ marginTop: 5, alignSelf: "flex-end" }}>
-            <CastButton style={{ width: 24, height: 24 }} />
-          </Touchable>
+          <View>
+            {castSettings.render()}
+          </View>
         ) : null}
         <Touchable onPress={() => shareSettings.onPress()} style={{ marginTop: 5, alignSelf: "flex-end" }}>
           <View>

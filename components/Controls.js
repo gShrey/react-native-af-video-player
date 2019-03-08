@@ -39,6 +39,7 @@ class Controls extends Component {
       seconds: 0,
       seeking: false
     }
+
     this.animControls = new Animated.Value(1)
     this.scale = new Animated.Value(1)
     this.progressbar = new Animated.Value(2)
