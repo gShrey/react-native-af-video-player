@@ -376,8 +376,6 @@ class Video extends Component {
       ...theme
     }
 
-    console.log("Chrome casting: progress values ", castProgress.duration, castProgress.progress);
-
     return (
       <View
         style={[
