@@ -18,6 +18,7 @@ import Orientation from 'react-native-orientation'
 import Icons from 'react-native-vector-icons/MaterialIcons'
 import { Controls } from './'
 import { checkSource } from './utils'
+
 const Win = Dimensions.get('window')
 const backgroundColor = '#000'
 
@@ -82,11 +83,11 @@ class Video extends Component {
     Dimensions.addEventListener('change', this.onRotated)
     BackHandler.addEventListener('hardwareBackPress', this.BackHandler);
     Orientation.getOrientation((err, orientation) => {
-      if(orientation === "LANDSCAPE" ||  this.props.startMode === "fullscreen") {
+      if (orientation === "LANDSCAPE" || this.props.startMode === "fullscreen") {
         if (Platform.OS === "ios") {
           Orientation.lockToLandscapeRight();
         } else {
-          requestAnimationFrame(() =>{
+          requestAnimationFrame(() => {
             Orientation.lockToLandscape();
           });
         }
@@ -98,7 +99,7 @@ class Video extends Component {
   }
 
   componentWillUnmount() {
-    if(this.pendingTimer) {
+    if (this.pendingTimer) {
       clearTimeout(this.pendingTimer);
     }
     Dimensions.removeEventListener('change', this.onRotated)
@@ -163,11 +164,11 @@ class Video extends Component {
 
   onRotated({ window: { width, height } }) {
     Orientation.getOrientation((err, orientation) => {
-      if(err) {
+      if (err) {
         orientation = width > height ? "LANDSCAPE" : "PORTRAIT";
       }
       const { manualToggle } = this.state;
-      if (orientation === 'LANDSCAPE' ) {
+      if (orientation === 'LANDSCAPE') {
         this.setState({ manualToggle: false, fullScreen: true, fullScreenHeight: height, }, () => {
           //this.animToFullscreen(height)
           this.props.onFullScreen(this.state.fullScreen);
@@ -175,22 +176,22 @@ class Video extends Component {
         return;
       }
       if (orientation === 'PORTRAIT') {
-          this.setState({
-            fullScreen: false,
-            manualToggle: false,
-          }, () => {
-            if(this.pendingTimer) {
-              clearTimeout(this.pendingTimer);
-            }
-            this.pendingTimer = setTimeout(() =>{
-              this.pendingTimer = null;
-              //wait for user to turn screen to potrait. Otherwise rotation won't
-               Orientation.unlockAllOrientations();
-            },4000);
-            this.props.onFullScreen(this.state.fullScreen)
-          });
-          return
-        }
+        this.setState({
+          fullScreen: false,
+          manualToggle: false,
+        }, () => {
+          if (this.pendingTimer) {
+            clearTimeout(this.pendingTimer);
+          }
+          this.pendingTimer = setTimeout(() => {
+            this.pendingTimer = null;
+            //wait for user to turn screen to potrait. Otherwise rotation won't
+            Orientation.unlockAllOrientations();
+          }, 4000);
+          this.props.onFullScreen(this.state.fullScreen)
+        });
+        return
+      }
     });
   }
 
@@ -358,6 +359,13 @@ class Video extends Component {
       playInBackground,
       playWhenInactive,
       shareSettings,
+      castSettings,
+      casting,
+      castProgress,
+      castSeek,
+      disableControls,
+      tickerText,
+      tickerTextStyle,
     } = this.props
 
     const inline = {
@@ -382,30 +390,32 @@ class Video extends Component {
       >
         <StatusBar hidden={fullScreen} />
         {
-          ((loading && placeholder)) &&
+          (((casting || loading) && placeholder)) &&
           <Image resizeMode="cover" style={styles.image} {...checkSource(placeholder)} />
         }
-        <VideoPlayer
-          {...checkSource(url)}
-          paused={paused}
-          resizeMode={resizeMode}
-          repeat={loop}
-          style={fullScreen ? (styles.fullScreen, { height: this.state.fullScreenHeight, width: this.state.fullScreenWidth }) : inline}
-          ref={(ref) => { this.player = ref }}
-          rate={rate}
-          volume={volume}
-          muted={muted}
-          playInBackground={playInBackground} // Audio continues to play when app entering background.
-          playWhenInactive={playWhenInactive} // [iOS] Video continues to play when control or notification center are shown.
-          // progressUpdateInterval={250.0}          // [iOS] Interval to fire onProgress (default to ~250ms)
-          onLoadStart={() => this.onLoadStart()} // Callback when video starts to load
-          onLoad={e => this.onLoad(e)} // Callback when video loads
-          onProgress={e => this.progress(e)} // Callback every ~250ms with currentTime
-          onEnd={() => this.onEnd()}
-          onError={e => this.onError(e)}
-          onBuffer={() => this.onBuffer()} // Callback when remote video is buffering
-          onTimedMetadata={e => onTimedMetadata(e)} // Callback when the stream receive some metadata
-        />
+        {casting ? null : (
+          <VideoPlayer
+            {...checkSource((!casting) ? url : null)}
+            paused={paused}
+            resizeMode={resizeMode}
+            repeat={loop}
+            style={fullScreen ? (styles.fullScreen, { height: this.state.fullScreenHeight, width: this.state.fullScreenWidth }) : inline}
+            ref={(ref) => { this.player = ref }}
+            rate={rate}
+            volume={volume}
+            muted={muted}
+            playInBackground={playInBackground} // Audio continues to play when app entering background.
+            playWhenInactive={playWhenInactive} // [iOS] Video continues to play when control or notification center are shown.
+            // progressUpdateInterval={250.0}          // [iOS] Interval to fire onProgress (default to ~250ms)
+            onLoadStart={() => this.onLoadStart()} // Callback when video starts to load
+            onLoad={e => this.onLoad(e)} // Callback when video loads
+            onProgress={e => this.progress(e)} // Callback every ~250ms with currentTime
+            onEnd={() => this.onEnd()}
+            onError={e => this.onError(e)}
+            onBuffer={() => this.onBuffer()} // Callback when remote video is buffering
+            onTimedMetadata={e => onTimedMetadata(e)} // Callback when the stream receive some metadata
+          />
+        )}
         <Controls
           ref={(ref) => { this.controls = ref }}
           toggleMute={() => this.toggleMute()}
@@ -415,21 +425,24 @@ class Video extends Component {
           muted={muted}
           disableSeek={disableSeek}
           fullscreen={fullScreen}
-          loading={loading}
-          onSeek={val => this.seek(val)}
-          onSeekRelease={pos => this.onSeekRelease(pos)}
-          progress={progress}
-          currentTime={currentTime}
-          duration={duration}
+          loading={casting ? false : loading}
+          onSeek={casting ? val => castSeek(val) : val => this.seek(val)}
+          onSeekRelease={casting ? () => { } : pos => this.onSeekRelease(pos)}
+          progress={casting ? castProgress.progress / castProgress.duration : progress}
+          currentTime={casting ? castProgress.progress : currentTime}
+          duration={casting ? castProgress.duration : duration}
           logo={logo}
           title={title}
           next={!!onNextPress}
           onNextPress={onNextPress}
           shareSettings={shareSettings}
+          castSettings={castSettings}
           more={!!onMorePress}
           onMorePress={() => onMorePress()}
           theme={setTheme}
           inlineOnly={inlineOnly}
+          tickerTextStyle={tickerTextStyle}
+          tickerText={tickerText}
         />
       </View>
     )
@@ -485,7 +498,13 @@ Video.propTypes = {
   title: PropTypes.string,
   theme: PropTypes.object,
   resizeMode: PropTypes.string,
-  shareSettings: PropTypes.object
+  shareSettings: PropTypes.object,
+  castSettings: PropTypes.object,
+  casting: PropTypes.bool,
+  tickerText: PropTypes.string,
+  tickerTextStyle: PropTypes.object,
+  castProgress: PropTypes.object,
+  castSeek: PropTypes.func,
 }
 
 Video.defaultProps = {
@@ -500,7 +519,10 @@ Video.defaultProps = {
   playWhenInactive: false,
   rotateToFullScreen: false,
   lockPortraitOnFsExit: false,
+  tickerText: null,
+  tickerTextStyle: {},
   disableSeek: false,
+  casting: false,
   onSeekRelease: () => { },
   onLoadStart: () => { },
   onBuffer: () => { },
@@ -513,6 +535,7 @@ Video.defaultProps = {
   onNextPress: undefined,
   onFullScreen: () => { },
   onTimedMetadata: () => { },
+  castSeek: () => { },
   rate: 1,
   volume: 1,
   lockRatio: undefined,
@@ -520,7 +543,11 @@ Video.defaultProps = {
   title: '',
   theme: defaultTheme,
   resizeMode: 'contain',
-  startMode: "inline"
+  startMode: "inline",
+  castProgress: {
+    duration: 0,
+    progress: 0,
+  }
 }
 
 export default Video
