@@ -364,6 +364,8 @@ class Video extends Component {
       castProgress,
       castSeek,
       disableControls,
+      tickerText,
+      tickerTextStyle,
     } = this.props
 
     const inline = {
@@ -439,6 +441,8 @@ class Video extends Component {
           onMorePress={() => onMorePress()}
           theme={setTheme}
           inlineOnly={inlineOnly}
+          tickerTextStyle={tickerTextStyle}
+          tickerText={tickerText}
         />
       </View>
     )
@@ -497,6 +501,8 @@ Video.propTypes = {
   shareSettings: PropTypes.object,
   castSettings: PropTypes.object,
   casting: PropTypes.bool,
+  tickerText: PropTypes.string,
+  tickerTextStyle: PropTypes.object,
   castProgress: PropTypes.object,
   castSeek: PropTypes.func,
 }
@@ -513,6 +519,8 @@ Video.defaultProps = {
   playWhenInactive: false,
   rotateToFullScreen: false,
   lockPortraitOnFsExit: false,
+  tickerText: null,
+  tickerTextStyle: {},
   disableSeek: false,
   casting: false,
   onSeekRelease: () => { },
