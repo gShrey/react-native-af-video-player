@@ -4,7 +4,8 @@ import {
   View,
   Animated,
   StyleSheet,
-  TouchableWithoutFeedback as Touchable
+  TouchableWithoutFeedback as Touchable,
+  Easing,
 } from 'react-native'
 import {
   PlayButton,
@@ -14,6 +15,7 @@ import {
   TopBar,
   ProgressBar
 } from './'
+import TextTicker from 'react-native-text-ticker' 
 
 const styles = StyleSheet.create({
   container: {
@@ -194,12 +196,38 @@ class Controls extends Component {
     )
   }
 
-  render() {
-    if (this.props.loading) return this.loading()
-    if (this.state.hideControls) {
-      return this.hiddenControls()
+  renderTicker() {
+    const { tickerText } = this.props;
+    if(!tickerText || tickerText === "") {
+      return <View></View>;
     }
-    return this.displayedControls()
+    return (
+      <View style={{ backgroundColor: "rgba(0,0,0, 0.7)", padding: 10 }}>
+          <TextTicker
+            style={{ fontSize: 16, color: "#ffffff"  }}
+            duration={12000}
+            loop
+            repeatSpacer={40}
+            easing={Easing.linear()}
+            marqueeDelay={1000}
+          >
+            {tickerText}
+          </TextTicker>
+      </View>
+    )
+  }
+
+  render() {
+    if (this.props.loading) return this.loading();
+    if (this.state.hideControls) {
+      Out = this.hiddenControls();;
+    }else {
+      Out = this.displayedControls();
+    }
+    return <View style={styles.container}>
+          {this.renderTicker()}
+          {Out}
+    </View>
   }
 }
 
