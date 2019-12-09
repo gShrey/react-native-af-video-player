@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback as Touchable,
   Easing,
+  Dimensions,
 } from 'react-native'
 import {
   PlayButton,
@@ -143,6 +144,7 @@ class Controls extends Component {
       inlineOnly,
       shareSettings,
       castSettings,
+      rightBottomButton
     } = this.props
 
     const { center, ...controlBar } = theme
@@ -173,6 +175,14 @@ class Controls extends Component {
               theme={center}
             />
           </Animated.View>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", width: Dimensions.get("window").width, height: 20 }}>
+            <View>
+
+            </View>
+            <View>
+              {rightBottomButton && rightBottomButton.show ?  rightBottomButton.render() : null}
+            </View>
+          </View>
           <ControlBar
             toggleFS={() => this.props.toggleFS()}
             toggleMute={() => this.props.toggleMute()}
@@ -202,7 +212,7 @@ class Controls extends Component {
       return <View></View>;
     }
     return (
-      <View style={{ backgroundColor: "rgba(0,0,0, 0.7)", padding: 10 }}>
+      <View style={{ position: "absolute", bottom: 30, backgroundColor: "rgba(0,0,0, 0.7)", padding: 10 }}>
           <TextTicker
             style={{ fontSize: 16, color: "#ffffff"  }}
             duration={12000}
