@@ -366,6 +366,7 @@ class Video extends Component {
       disableControls,
       tickerText,
       tickerTextStyle,
+      rightBottomButton,
     } = this.props
 
     const inline = {
@@ -443,6 +444,7 @@ class Video extends Component {
           inlineOnly={inlineOnly}
           tickerTextStyle={tickerTextStyle}
           tickerText={tickerText}
+          rightBottomButton={rightBottomButton}
         />
       </View>
     )
